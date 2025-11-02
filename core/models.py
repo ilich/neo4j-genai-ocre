@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     neo4j_database: str
     embedding_model: str
     embedding_dimension: int
+    chat_model: str
+    temperature: float
+    top_p: float
+    top_k: int
     openai_api_key: str
 
     class Config:
