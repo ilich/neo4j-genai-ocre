@@ -3,13 +3,14 @@ from abc import ABC, abstractmethod
 
 import ipywidgets as widgets
 from IPython.display import display
+from neo4j_graphrag.types import LLMMessage
 
 TERMINAL_LINE_WIDTH = 80
 
 
 class ChatService(ABC):
     @abstractmethod
-    def chat(self, query: str, history: list[tuple[str, str]]) -> str:
+    def chat(self, query: str, history: list[LLMMessage]) -> str:
         pass
 
 
@@ -39,8 +40,8 @@ def run(chat: ChatService) -> str:
             print(textwrap.fill(f"<<< Assistant: {answer}", width=TERMINAL_LINE_WIDTH))
             print()
 
-            history.append(("user", question))
-            history.append(("assistant", answer))
+            history.append(LLMMessage(role="user", content=question))
+            history.append(LLMMessage(role="assistant", content=answer))
 
     clear_button = widgets.Button(
         description="Clear",
