@@ -11,6 +11,8 @@ An agentic RAG (Retrieval Augmented Generation) system for exploring the Online 
   - Semantic search on coin descriptions, iconography, and visual features
 - **Expert Context**: Provides comprehensive answers with historical context from expert numismatic knowledge
 - **MCP Server Integration**: Seamlessly integrates with Claude Desktop for conversational coin exploration
+- **Vision-based Identification**: Identify coins from images using GPT-4o vision (via notebooks)
+- **Hybrid Retrieval**: Combines vector embeddings and full-text search for optimal results
 
 ## Prerequisites
 
@@ -55,7 +57,7 @@ NEO4J_DATABASE=neo4j
 EMBEDDING_MODEL=text-embedding-3-small
 EMBEDDING_DIMENSION=1536
 CHAT_MODEL=gpt-4o-mini
-TEMPERATURE=0.2
+TEMPERATURE=0.7
 TOP_P=1.0
 TOP_K=5
 OPENAI_API_KEY=your-openai-api-key
@@ -123,18 +125,26 @@ The system will:
 
 ```
 neo4j-genai-ocre/
-  core/
-    agentic_rag_tools.py    # Search tools for different query types
-    ocre_agent.py           # Agentic RAG service with tool selection
-    chat.py                 # Base chat service
-    models.py               # Pydantic models and settings
-    utils.py                # Utility functions
-  notebooks/                # Jupyter notebooks for exploration
-  data/                     # Data files
-  mcp_server.py             # MCP server implementation
-  pyproject.toml            # Project dependencies
-  .env.example              # Environment variables template
-  README.md                 # This file
+├── core/
+│   ├── agentic_rag_tools.py    # Search tools for different query types
+│   ├── ocre_agent.py           # Agentic RAG service with tool selection
+│   ├── chat.py                 # Base chat service with Jupyter UI
+│   ├── models.py               # Pydantic models and settings
+│   └── utils.py                # Utility functions (date parsing, Neo4j conversion)
+├── notebooks/
+│   ├── 1-create-knowledge-graph.ipynb  # Data ingestion and indexing
+│   ├── 2-rag-chat.ipynb                # Basic RAG chat implementation
+│   ├── 3-chat-history.ipynb            # Chat with Redis-backed history
+│   ├── 4-agentic-rag.ipynb             # Early agentic RAG testing
+│   └── 5-roman-numismatics-agent.ipynb # Full agent with vision and tools
+├── data/
+│   └── coins/              # Coin images for vision-based identification
+├── docs/
+│   └── NODES2025.pdf       # Conference presentation slides
+├── mcp_server.py           # MCP server implementation
+├── pyproject.toml          # Project dependencies
+├── .env.example            # Environment variables template
+└── README.md               # This file
 ```
 
 ## How It Works
@@ -150,15 +160,40 @@ The system uses a two-stage agentic RAG approach:
 
 The system can combine multiple search strategies for complex queries (e.g., finding coins of a specific emperor within a date range with particular iconographic features).
 
+## Notebooks
+
+The `notebooks/` directory contains Jupyter notebooks for exploration and development:
+
+| Notebook | Description |
+|----------|-------------|
+| `1-create-knowledge-graph.ipynb` | Data ingestion pipeline - loads OCRE JSON data into Neo4j, creates embeddings, and builds indexes |
+| `2-rag-chat.ipynb` | Basic RAG chat service implementation |
+| `3-chat-history.ipynb` | Chat with Redis-backed conversation history |
+| `4-agentic-rag.ipynb` | Early agentic RAG testing |
+| `5-roman-numismatics-agent.ipynb` | Full-featured agent using OpenAI Agents SDK with vision and tools |
+
+### Roman Numismatics Agent (Notebook 5)
+
+The most advanced notebook implements a complete agent using the OpenAI Agents SDK with:
+
+- **Vision Capability**: Identify coins from images using GPT-4o vision
+- **Wikipedia Integration**: Enrich answers with historical context from Wikipedia
+- **Hybrid Database Search**: Combine vector and full-text search for coin lookup
+- **Redis Memory**: Persistent conversation history across sessions
+- **Interactive UI**: Jupyter widgets for chat-based interaction
+
 ## Dependencies
 
 Key dependencies include:
 - `fastmcp`: MCP server framework
-- `neo4j-graphrag[openai]`: Neo4j GraphRAG integration with OpenAI
-- `openai`: OpenAI API client
-- `pydantic`: Data validation and settings management
+- `neo4j-graphrag[openai]`: Neo4j GraphRAG integration with OpenAI embeddings and hybrid retrieval
+- `openai-agents[redis]`: OpenAI Agents SDK with Redis session memory
+- `pydantic` / `pydantic-settings`: Data validation and settings management
 - `python-dotenv`: Environment variable management
 - `loguru`: Logging
+- `pillow`: Image processing for coin vision features
+- `wikipedia`: Wikipedia API client for historical context
+- `ipywidgets` / `notebook`: Jupyter notebook support
 
 See `pyproject.toml` for the complete list.
 
