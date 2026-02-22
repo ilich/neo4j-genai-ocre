@@ -1,7 +1,10 @@
+import asyncio
+import inspect
 import textwrap
 from abc import ABC, abstractmethod
 
 import ipywidgets as widgets
+import nest_asyncio
 from IPython.display import display
 from neo4j_graphrag.types import LLMMessage
 
@@ -11,6 +14,9 @@ TERMINAL_LINE_WIDTH = 80
 class ChatService(ABC):
     @abstractmethod
     def chat(self, query: str, history: list[LLMMessage]) -> str:
+        pass
+
+    def clear(self):
         pass
 
 
@@ -36,7 +42,15 @@ def run(chat: ChatService) -> str:
                 return
 
             text_field.value = ""
-            answer = chat.chat(question, history)
+
+            # Support both sync and async chat implementations
+            chat_method = getattr(chat, "chat")
+            if inspect.iscoroutinefunction(chat_method):
+                nest_asyncio.apply()
+                loop = asyncio.get_event_loop()
+                answer = loop.run_until_complete(chat.chat(question, history))
+            else:
+                answer = chat.chat(question, history)
             print(textwrap.fill(f"<<< Assistant: {answer}", width=TERMINAL_LINE_WIDTH))
             print()
 
@@ -51,6 +65,7 @@ def run(chat: ChatService) -> str:
     )
 
     def on_clear_click(b):
+        chat.clear()
         text_field.value = ""
         history.clear()
         output.clear_output()

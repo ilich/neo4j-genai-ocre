@@ -18,6 +18,12 @@ An agentic RAG (Retrieval Augmented Generation) system for exploring the Online 
 - [uv](https://github.com/astral-sh/uv) (Python package installer and environment manager)
 - Neo4j database instance with OCRE data
 - OpenAI API key
+- Redis
+
+You can use Docker to run Redis:
+```bash
+docker run --rm -p 6379:6379 redis
+```
 
 ## Installation
 
@@ -53,6 +59,8 @@ TEMPERATURE=0.2
 TOP_P=1.0
 TOP_K=5
 OPENAI_API_KEY=your-openai-api-key
+REDIS_URL=redis://localhost:6379/0
+HISTORY_LIMIT=25
 ```
 
 ## Running the MCP Server

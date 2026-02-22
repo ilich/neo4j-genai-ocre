@@ -208,3 +208,7 @@ __marimo__/
 
 # macOS
 .DS_Store
+
+# Project
+data/coins/*
+!data/coins/.gitkeep

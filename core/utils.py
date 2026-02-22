@@ -16,3 +16,15 @@ def parse_year(year_str: str) -> int:
     except (ValueError, TypeError) as e:
         logger.warning(f"Could not parse year from string '{year_str}': {e}")
         return 0
+
+
+def record_to_dict(record, selector: str = "c") -> dict[str, str | int]:
+    return {
+        "record_id": record[selector]["record_id"],
+        "title": record[selector]["title"],
+        "date_range": record[selector]["date_range"],
+        "from_year": record[selector]["from_year"],
+        "to_year": record[selector]["to_year"],
+        "object_type": record[selector]["object_type"],
+        "description": record[selector]["description"],
+    }

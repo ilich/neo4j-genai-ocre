@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     top_p: float
     top_k: int
     openai_api_key: str
+    redis_url: str
+    history_limit: int
 
     class Config:
         env_file = ".env"

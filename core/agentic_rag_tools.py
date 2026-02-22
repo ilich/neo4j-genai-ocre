@@ -8,21 +8,9 @@ from neo4j_graphrag.embeddings.openai import OpenAIEmbeddings
 from neo4j_graphrag.retrievers import HybridRetriever
 
 from core.models import Settings
-from core.utils import parse_year
+from core.utils import parse_year, record_to_dict
 
 settings = Settings()
-
-
-def record_to_dict(record, selector: str = "c") -> dict[str, str | int]:
-    return {
-        "record_id": record[selector]["record_id"],
-        "title": record[selector]["title"],
-        "date_range": record[selector]["date_range"],
-        "from_year": record[selector]["from_year"],
-        "to_year": record[selector]["to_year"],
-        "object_type": record[selector]["object_type"],
-        "description": record[selector]["description"],
-    }
 
 
 find_coins_by_imperor_description = {
